@@ -14,7 +14,7 @@ type EventRepository struct {
 func (r *EventRepository) GetMany(ctx context.Context) ([]*models.Event, error) {
 	events := []*models.Event{}
 
-	res := r.db.Model(&models.Event{}).Find(&events)
+	res := r.db.Model(&models.Event{}).Order("updated_at DESC").Find(&events)
 
 	if res.Error != nil {
 		return nil, res.Error
@@ -23,12 +23,49 @@ func (r *EventRepository) GetMany(ctx context.Context) ([]*models.Event, error) 
 	return events, nil
 }
 
-func (r *EventRepository) GetOne(ctx context.Context, eventID string) (*models.Event, error) {
-	return nil, nil
+func (r *EventRepository) GetOne(ctx context.Context, eventID uint) (*models.Event, error) {
+	event := &models.Event{}
+
+	res := r.db.Model(&models.Event{}).Where("id = ?", eventID).First(&event)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return event, nil
 }
 
-func (r *EventRepository) CreateOne(ctx context.Context, event models.Event) (*models.Event, error) {
-	return nil, nil
+func (r *EventRepository) CreateOne(ctx context.Context, event *models.Event) (*models.Event, error) {
+	res := r.db.Model(event).Create(event)
+
+	if res.Error != nil {
+		return nil, res.Error
+	}
+
+	return event, nil
+}
+
+func (r *EventRepository) UpdateOne(ctx context.Context, eventID uint, updateData map[string]interface{}) (*models.Event, error) {
+	event := &models.Event{}
+
+	updateRes := r.db.Model(event).Where("id = ?", eventID).Updates(updateData)
+
+	if updateRes.Error != nil {
+		return nil, updateRes.Error
+	}
+
+	getRes := r.db.Where("id = ?", eventID).First(event)
+
+	if getRes.Error != nil {
+		return nil, getRes.Error
+	}
+
+	return event, nil
+}
+
+func (r *EventRepository) DeleteOne(ctx context.Context, eventID uint) error {
+	res := r.db.Delete(&models.Event{}, eventID)
+	return res.Error
 }
 
 func NewEventRepository(db *gorm.DB) models.EventRepository {

@@ -12,6 +12,7 @@ import (
 
 func main() {
 	envConfig := config.NewEnvConfig()
+
 	db := db.Init(envConfig, db.DBMigrate)
 	app := fiber.New(fiber.Config{
 		AppName:      "RN with Go",
