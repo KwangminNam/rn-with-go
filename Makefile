@@ -1,8 +1,6 @@
-start: build
-	@./bin/api
+start:
+	@docker compose up --build
 
-build:
-	@go build -o ./bin/api ./cmd/api/main.go
-
-clean:
-	@rm -rf ./bin
+stop:
+	@docker-compose rm -v --force --stop
+	@docker rmi ticket-booking
