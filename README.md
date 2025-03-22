@@ -1,1 +1,1 @@
-# rn-with-go
+# Getting Start with React Naitve with Go Lang~!!
